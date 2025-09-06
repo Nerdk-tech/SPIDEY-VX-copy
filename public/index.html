@@ -95,26 +95,45 @@
   </div>
 
   <script>
+    // ====== Generate pairing code ======
     async function getCode() {
       const number = document.getElementById("number").value;
       if (!number) return alert("Please enter a number!");
 
-      const res = await fetch("/pair?number=" + number);
-      const data = await res.json();
-
-      const code = data.code;
-      document.getElementById("result").innerText = "Your Code: " + code;
-
-      // Copy to clipboard
       try {
-        await navigator.clipboard.writeText(code);
-        document.getElementById("copiedMsg").innerText = "✅ Code copied to clipboard!";
+        const res = await fetch("/pair", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ number })
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+          document.getElementById("result").innerText = "⚠️ " + data.error;
+          document.getElementById("copiedMsg").innerText = "";
+          return;
+        }
+
+        const code = data.pairingCode;
+        document.getElementById("result").innerText = "Your Code: " + code;
+
+        // Copy to clipboard
+        try {
+          await navigator.clipboard.writeText(code);
+          document.getElementById("copiedMsg").innerText = "✅ Code copied to clipboard!";
+        } catch (err) {
+          document.getElementById("copiedMsg").innerText = "⚠️ Could not copy automatically. Copy manually.";
+        }
+
       } catch (err) {
-        document.getElementById("copiedMsg").innerText = "⚠️ Could not copy automatically. Copy manually.";
+        console.error(err);
+        document.getElementById("result").innerText = "⚠️ Failed to generate code";
+        document.getElementById("copiedMsg").innerText = "";
       }
     }
 
-    // Matrix animation
+    // ====== Matrix animation ======
     const canvas = document.getElementById("matrix");
     const ctx = canvas.getContext("2d");
     canvas.height = window.innerHeight;
@@ -122,12 +141,10 @@
 
     const letters = "01";
     const fontSize = 16;
-    const columns = canvas.width / fontSize;
+    const columns = Math.floor(canvas.width / fontSize);
 
     const drops = [];
-    for (let x = 0; x < columns; x++) {
-      drops[x] = 1;
-    }
+    for (let x = 0; x < columns; x++) drops[x] = 1;
 
     function draw() {
       ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
@@ -140,9 +157,7 @@
         const text = letters[Math.floor(Math.random() * letters.length)];
         ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
         drops[i]++;
       }
     }
