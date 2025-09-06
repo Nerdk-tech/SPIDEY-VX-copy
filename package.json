@@ -1,13 +1,13 @@
 {
-  "name": "𝐃𝐄𝐀𝐓𝐇-𝐖𝐈𝐒𝐇",
+  "name": "spidey-vx",
   "version": "1.0.0",
-  "description": "𝐂𝐫𝐞𝐚𝐭𝐞𝐝 𝐁𝐲 𝐌𝐙𝐀𝐙𝐈",
+  "description": "created by damini",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
     "start": "node server.js"
   },
-  "author": "𝐌𝐙𝐀𝐙𝐈-𝐓𝐄𝐂𝐇",
+  "author": "damini",
   "license": "MIT",
   "dependencies": {
     "@adiwajshing/keyed-db": "^0.2.4",
